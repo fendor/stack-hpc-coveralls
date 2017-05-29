@@ -5,9 +5,9 @@
 </h1>
 
 <p align="center">
-    <a href="https://travis-ci.org/rubik/stack-hpc-coveralls">
+    <a href="https://travis-ci.org/fendor/stack-hpc-coveralls">
         <img alt="Tests"
-             src="https://img.shields.io/travis/rubik/stack-hpc-coveralls.svg?style=flat-square">
+             src="https://travis-ci.org/fendor/stack-hpc-coveralls.svg?branch=master">
     </a>
     <a href="https://coveralls.io/github/rubik/stack-hpc-coveralls">
         <img alt="Code coverage"
