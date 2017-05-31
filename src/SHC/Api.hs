@@ -39,6 +39,7 @@ sendData :: Config        -- ^ SHC configuration
          -> Value         -- ^ The JSON object
          -> IO PostResult
 sendData conf url json = do
+    print httpOptions
     r <- postWith httpOptions url [partFileRequestBody "json_file" fileName requestBody]
     if r ^. responseStatus . statusCode == 200
        then return $ readResponse r

@@ -11,20 +11,20 @@
 module SHC.Stack
     where
 
-import Data.Version
+import           Data.Version
 #if __GLASGOW_HASKELL__ < 710
-import Control.Applicative ((<$>), (<*>))
+import           Control.Applicative   ((<$>), (<*>))
 #endif
-import Control.Monad (forM, guard)
-import Data.List (elem)
-import System.Directory (makeRelativeToCurrentDirectory)
-import System.FilePath ((</>), equalFilePath, splitPath)
+import           Control.Monad         (forM, guard)
+import           Data.List             (elem)
+import           System.Directory      (makeRelativeToCurrentDirectory)
+import           System.FilePath       (equalFilePath, splitPath, (</>))
 
 import qualified Data.ByteString.Char8 as BS8
-import qualified Data.Yaml as Y
+import qualified Data.Yaml             as Y
 
-import SHC.Types
-import SHC.Utils
+import           SHC.Types
+import           SHC.Utils
 
 
 stack :: [String] -> IO String

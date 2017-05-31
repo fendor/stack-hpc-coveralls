@@ -1,27 +1,25 @@
-{-# LANGUAGE CPP         #-}
-{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE CPP               #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes       #-}
 module Main
     where
 
-import           Control.Monad         (unless, when)
-import           Data.Aeson            (encode)
-import qualified Data.ByteString.Lazy  as BSL
-import           Data.List             (find)
-import           Data.Maybe            (isJust)
-#if __GLASGOW_HASKELL__ < 710
-import           Control.Applicative   (pure, (<$>), (<*>))
-#endif
-import           Control.Concurrent    (threadDelay)
-import           System.Console.Docopt
-import           System.Environment    (getArgs, getEnv, getEnvironment)
-import           System.Exit           (exitFailure)
-
+import           Control.Concurrent       (threadDelay)
+import           Control.Monad            (unless, when)
+import           Data.Aeson               (encode)
+import           Data.Aeson.Encode.Pretty (encodePretty)
+import qualified Data.ByteString.Lazy     as BSL
+import qualified Data.ByteString.Lazy     as Lazy
+import           Data.List                (find)
+import           Data.Maybe               (isJust)
 import           SHC.Api
 import           SHC.Coverage
 import           SHC.Stack
 import           SHC.Types
 import           SHC.Utils
-
+import           System.Console.Docopt
+import           System.Environment       (getArgs, getEnv, getEnvironment)
+import           System.Exit              (exitFailure)
 
 urlApiV1 :: String
 urlApiV1 = "https://coveralls.io/api/v1/jobs"
@@ -80,6 +78,7 @@ main = do
         exitFailure
     conf <- getConfig args
     coverallsJson <- generateCoverallsFromTix conf
+    Lazy.writeFile "json.file" $ encodePretty coverallsJson
     if args `isPresent` longOption "dont-send"
        then BSL.putStr $ encode coverallsJson
        else do

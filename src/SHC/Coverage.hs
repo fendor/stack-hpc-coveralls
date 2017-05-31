@@ -24,13 +24,13 @@ import qualified Data.ByteString.Lazy.Char8 as LBS
 import           Data.Digest.Pure.MD5
 import           Data.Function
 import           Data.List
-import           Data.Maybe                 (fromMaybe)
 import qualified Data.Map.Strict            as M
+import           Data.Maybe                 (fromMaybe)
 import           SHC.Lix
 import           SHC.Types
 import           SHC.Utils
 import           System.Exit                (exitFailure)
-import           System.FilePath            ((</>), normalise)
+import           System.FilePath            (normalise, (</>))
 import           Trace.Hpc.Mix
 import           Trace.Hpc.Tix
 import           Trace.Hpc.Util
@@ -71,7 +71,7 @@ generateCoverallsFromTix conf = do
     return $ toCoverallsJson conf converter coverageData
     where testSuitesName = suitesName conf
           converter = case conversion conf of
-              FullLines -> strictConverter
+              FullLines    -> strictConverter
               PartialLines -> looseConverter
 
 -- | Create a list of coverage data from the tix input
@@ -103,8 +103,7 @@ toCoverallsJson conf converter testSuiteCoverageData =
     object $ if serviceName conf == "travis-ci"
                 then withRepoToken
                 else withGitInfo
-    where base = [ "service_job_id" .= jobId conf
-                 , "service_name"   .= serviceName conf
+    where base = [ "service_name"   .= serviceName conf
                  , "source_files"   .= toJsonList testSuiteCoverageData
                  ]
           toJsonList = map (uncurry $ coverageToJson converter) . M.toList
@@ -143,4 +142,4 @@ getExprSource source (hpcPos, _) = subSubSeq startCol endCol subLines
 groupMixEntryTixs :: [(MixEntry, Integer, [String])] -> [CoverageEntry]
 groupMixEntryTixs = map mergeOnLst3 . groupBy ((==) `on` fst . fst3)
     where mergeOnLst3 xxs@(x:_) = (map fst3 xxs, map snd3 xxs, trd3 x)
-          mergeOnLst3 [] = error "mergeOnLst3 applied to empty list"
+          mergeOnLst3 []        = error "mergeOnLst3 applied to empty list"

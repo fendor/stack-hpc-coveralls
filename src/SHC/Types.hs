@@ -1,16 +1,17 @@
-{-# LANGUAGE CPP, OverloadedStrings #-}
+{-# LANGUAGE CPP               #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module SHC.Types
     where
 
-import           Control.Monad (forM)
+import           Control.Monad       (forM)
 import           Data.Aeson
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text           as T
 import           Trace.Hpc.Mix
 
 #if __GLASGOW_HASKELL__ < 710
-import Control.Applicative ((<$>))
+import           Control.Applicative ((<$>))
 #endif
 
 
@@ -32,9 +33,10 @@ data Hit = Full
 
 type Lix = [Hit]
 
-data PostResult = PostSuccess String
-                | PostFailure String
-                deriving (Show)
+data PostResult
+    = PostSuccess String
+    | PostFailure String
+    deriving (Show)
 
 data Config = Config
     { packageName   :: String
@@ -49,12 +51,14 @@ data Config = Config
     , stackProjects :: [StackProject]
     , fetchCoverage :: Bool
     }
+    deriving (Show)
 
 data GitInfo = GitInfo
     { headRef :: Commit
     , branch  :: String
     , remotes :: [Remote]
     }
+    deriving (Show)
 
 data Commit = Commit
     { hash           :: String
@@ -63,12 +67,12 @@ data Commit = Commit
     , committerName  :: String
     , committerEmail :: String
     , message        :: String
-    }
+    } deriving (Show)
 
 data Remote = Remote
     { name :: String
     , url  :: String
-    }
+    } deriving (Show)
 
 instance ToJSON GitInfo where
     toJSON i = object [ "head"    .= headRef i
