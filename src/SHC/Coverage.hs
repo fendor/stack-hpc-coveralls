@@ -100,9 +100,7 @@ readCoverageData conf suite = do
 
 toCoverallsJson :: Config -> LixConverter -> TestSuiteCoverageData -> Value
 toCoverallsJson conf converter testSuiteCoverageData =
-    object $ if serviceName conf == "travis-ci"
-                then withRepoToken
-                else withGitInfo
+    object withGitInfo
     where base = [ "service_name"   .= serviceName conf
                  , "source_files"   .= toJsonList testSuiteCoverageData
                  ]
