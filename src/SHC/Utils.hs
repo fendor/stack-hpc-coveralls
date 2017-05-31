@@ -11,15 +11,16 @@
 module SHC.Utils
     where
 
-import           Control.Monad       (guard)
-import           Data.Function       (on)
+import           Control.Monad                (guard)
+import           Data.Function                (on)
 import           Data.List
 import           Data.Version
 #if __GLASGOW_HASKELL__ < 710
-import           Control.Applicative ((<$>), (<*>))
+import           Control.Applicative          ((<$>), (<*>))
 #endif
+import           System.Environment           (getEnvironment)
+import           System.Process               (readProcess)
 import           Text.ParserCombinators.ReadP
-import           System.Process      (readProcess)
 
 import           SHC.Types
 
@@ -31,15 +32,22 @@ git :: [String] -> IO String
 git = readP "git"
 
 -- | Get information about the Git repo in the current directory.
-getGitInfo :: IO GitInfo
-getGitInfo = GitInfo <$> headRef <*> branchName <*> getRemotes
+getGitInfo :: String -> IO GitInfo
+getGitInfo servicename = GitInfo <$> headRef <*> branchName <*> getRemotes
     where headRef = Commit <$> git ["rev-parse", "HEAD"]
                            <*> git ["log", "-1", "--pretty=%aN"]
                            <*> git ["log", "-1", "--pretty=%aE"]
                            <*> git ["log", "-1", "--pretty=%cN"]
                            <*> git ["log", "-1", "--pretty=%cE"]
                            <*> git ["log", "-1", "--pretty=%s"]
-          branchName = git ["rev-parse", "--abbrev-ref", "HEAD"]
+          branchName =
+              if servicename == "travis-ci" then do
+                  env <- getEnvironment
+                  case lookup "TRAVIS_BRANCH" env of
+                    Just name -> return name
+                    Nothing   -> return "HEAD"
+              else
+                  git ["rev-parse", "--abbrev-ref", "HEAD"]
 
 getRemotes :: IO [Remote]
 getRemotes = nubBy ((==) `on` name) . parseRemotes <$> git ["remote", "-v"]
@@ -73,7 +81,7 @@ toFirstAndRest :: (a, b, c, d) -> (a, (b, c, d))
 toFirstAndRest (a, b, c, d) = (a, (b, c, d))
 
 mcons :: Maybe a -> [a] -> [a]
-mcons Nothing xs = xs
+mcons Nothing xs  = xs
 mcons (Just x) xs = x:xs
 
 matchAny :: [String] -> String -> Bool
